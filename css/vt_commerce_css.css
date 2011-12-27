@@ -6,8 +6,6 @@
 
 .vt-commerce-image-wrapper .vt-commerce-image-large {
 	width: 330px;
-	height: 260px;
-	overflow: hidden;
 }
 
 .vt-commerce-image-wrapper .vt-commerce-image-large img {
@@ -20,26 +18,15 @@
 }
 .vt-commerce-image-wrapper .cloud-thumbnail {
   width: 330px;
-  overflow: hidden;
 }
 .vt-commerce-image-wrapper .cloud-thumbwrapper {
 	float: left;
-  margin: 5px 6px 10px 0 !important;
-  border: 1px solid #D6D6D6;
-  padding: 4px;
+  margin: 5px 5px 10px 0 !important;
   cursor: pointer;
 }
 .vt-commerce-image-wrapper .cloud-thumbwrapper img {
   max-width: 100% !important;
   margin: 0 !important;
-  border: none !important;
   padding: 0 !important;
-}
-
-.vt-commerce-image-wrapper .cloud-thumbwrapper img.iehover {
-  max-width: 100% !important;
-  margin: 0 !important;
-  border: 1px solid #D6D6D6 !important;
-  padding: 4px !important;
-  background: #fff;
+  border: none !important;
 }

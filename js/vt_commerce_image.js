@@ -9,8 +9,13 @@ jQuery(document).ready(function ($) {
 	
 	function attach() {
 		var option = Drupal.settings.vt_commerce_image,
-		    clouds = $('.cloud-zoom');
-		
+		    clouds = $('.cloud-zoom'),
+		    parents = $('.vt-commerce-image-wrapper'), // your parent element
+		    wrap = $('.wrap'),
+		    z = 9000,
+        cHeight = clouds.find('img').outerHeight(true),
+        cWidth = clouds.find('img').outerWidth(true);
+		    
 		if (option.zoom == 'yes') {
 		  clouds.CloudZoom();
 		}
@@ -20,50 +25,52 @@ jQuery(document).ready(function ($) {
 	    // to be visible when intialized, so we cannot just plain hide the
 	    // large element, instead we use z-index to hide the element and 
 	    // show the first element on load
-	    ul = $('.cloud-zoom').parents('.vt-commerce-image-wrapper'); // your parent element
 	    
 	    // reorder the zindex so the first element will be always shown first
-	    var z = 9000;
-	    ul.find('.wrap').each(function() {
-	      $(this).css('z-index',  z );
-	      z--;
-	    });
-	  
-	    // declare variables
-	    var parents = clouds.parents('.vt-commerce-image-wrapper'),
-	        cHeight = clouds.find('img').height(),
-	        cWidth = clouds.find('img').width();
+		  // hide all wrap except the first one;
+	    wrap.each(function() {
+	      $(this).css('z-index',  z ).hide();
+	      z--;	     
+	    }).eq(0).show();
+	    
+	    // set the large image wrapper height
+	    $('.vt-commerce-image-large').height(cHeight);
+	    
 	    
 	    // create the thumbnail wrapper so we can add thumbnail child here later on
 	    parents.css('position', 'relative').append('<div class="cloud-thumbnail"/>');
 	  
 	    // cloning the large image to create a thumbnail navigation
 	    clouds.each(function() {
-	      var thumbClone = $(this).find('img').clone().width(50).height(50);
-	      thumbClone.appendTo('.cloud-thumbnail').addClass('thumbsmall').wrap('<div class="cloud-thumbwrapper" />');
-	      
+	      var thumbClone = $(this).find('img').clone().width(option.previewWidth).height(option.previewHeight);
+	      thumbClone.appendTo('.cloud-thumbnail').addClass('thumbsmall').wrap('<div class="cloud-thumbwrapper" />');      
 	    });
 	    
+	    // declare the newly cloned thumb as a new variable
+	    var thumbSmall = $('.thumbsmall');
+	    
 	    // function for the thumbnail to show the right large image
-	    $('.thumbsmall').each(function(){      
-	      $(this).click(function() {
-	        var index = $('.thumbsmall').index(this);
-	        clouds.parents('.wrap').fadeOut(100);
-	        clouds.eq(index).parents('.wrap').fadeIn(800);  
-	        $('.thumbsmall').removeClass('active');
+	    thumbSmall.each(function(){      
+	      $(this).unbind('click').click(function() {
+	        var index = thumbSmall.index(this);
+	        wrap.stop().hide(0, function() { 
+	          clouds.eq(index).parents('.wrap').show();
+	        }); 
+	        thumbSmall.removeClass('active');
 	        $(this).addClass('active');	        
 	      });
 	    }).eq(0).addClass('active');
 
-	    
+	    // declare the thumbwrapper
+	    var thumbWrapper = $('.cloud-thumbwrapper');
       if (option.hoverZoom == 1) {
-        $('.cloud-thumbnail .cloud-thumbwrapper').width(50).height(50).imageEnlarge({
-          multiple: 1.2,
-          mouseInSpeed : 300,
-          mouseOutSpeed : 300,
-          zindex : 600,
-          topOffset : -5,
-          leftOffset : -5
+        thumbWrapper.width(option.previewWidth).height(option.previewHeight).imageEnlarge({
+          multiple: option.multiple,
+          mouseInSpeed : option.mouseOutSpeed,
+          mouseOutSpeed : option.mouseInSpeed,
+          zindex : option.zindex,
+          topOffset : option.topOffset,
+          leftOffset : option.leftOffset
         });
       }
 	}
