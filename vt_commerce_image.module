@@ -8,6 +8,7 @@ function vt_commerce_image_field_formatter_info() {
       'label' => t('VT Commerce Image'),
       'field types' => array('image'),
       'settings'  => array( //Array of the settings we'll create
+        'moduletheme' => 'vt_commerce_image_default',
         'zoom' => 1,
         'imagewidth' => '320',
         'imageheight' => '240',
@@ -32,6 +33,26 @@ function vt_commerce_image_field_formatter_info() {
         'leftOffset' => '0',
         'previewWidth' => '50',
         'previewHeight' => '50',
+        'colorbox' => 1,
+        'colorboxTheme' => 'default',
+        'transition' => 'elastic',
+        'speed' => '350',
+        'scalePhotos' => 'true',
+        'scrolling' => 'true',
+        'opacity' => '0.85',
+        'preloading' => 'true',
+        'overlayClose' => 'true',
+        'escKey' => 'true',
+        'arrowKey' => 'true',
+        'loop' => 'true',
+        'width' => 'false',
+        'height' => 'false',
+        'innerWidth' => 'false',
+        'innerHeight' => 'false',
+        'initialWidth' => '300',
+        'initialHeight' => '100',
+        'maxWidth' => 'false',
+        'maxHeight' => 'false',
       ),
     ),
   );
@@ -45,10 +66,14 @@ function vt_commerce_image_field_formatter_settings_form($field, $instance, $vie
   $display = $instance['display'][$view_mode];
   //This gets the actual settings
   $settings = $display['settings'];
-  dsm($settings);
   //Initialize the element variable
   $element = array();
-
+  $element['moduletheme'] = array(
+    '#type' => 'select',
+    '#options' => vt_commerce_catalog_read_dir('vt_commerce_image'),
+    '#title' => t('Select themes'),
+    '#default_value' => $settings['moduletheme'],
+  );
   $element['zoom'] = array(
     '#type' => 'checkbox',
     '#description' => t('Check to enable zooming features in the large image area'),
@@ -212,6 +237,162 @@ function vt_commerce_image_field_formatter_settings_form($field, $instance, $vie
     '#default_value' => $settings['leftOffset'],
     '#field_suffix' => 'px',
   );
+  $element['colorbox'] = array(
+    '#type' => 'checkbox',
+    '#description' => t('Colorbox will run if enabled and when user click on the large image'),
+    '#title' => t('Enable Colorbox'),
+    '#default_value' => $settings['colorbox'],
+  );
+
+  $element['colorboxTheme'] = array(
+    '#type' => 'select',
+    '#options' => vt_commerce_catalog_read_dir('vt_commerce_image', '/colorbox_theme/'),
+    '#title' => t('Select Colorbox themes'),
+    '#default_value' => $settings['colorboxTheme'],
+  );
+
+  $element['transition'] = array(
+    '#type' => 'select',
+    '#options' => array('elastic' => t('Elastic'), 'fade' => t('Fade'), 'none' => t('None')),
+    '#title' => t('Colorbox Transition'),
+    '#description' => t('The transition type. Can be set to "elastic", "fade", or "none".'),
+    '#default_value' => $settings['transition'],
+  );
+
+  $element['speed'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Colorbox transition speed'),
+    '#description' => t('Sets the speed of the fade and elastic transitions, in milliseconds.'),
+    '#default_value' => $settings['speed'],
+    '#field_suffix' => 'miliseconds',
+  );
+
+  $element['scalePhotos'] = array(
+    '#type' => 'select',
+    '#options' => array('true' => t('True'), 'false' => t('False')),
+    '#title' => t('Colorbox scale photo'),
+    '#description' => t('If true, and if maxWidth, maxHeight, innerWidth, innerHeight, width, or height have been defined, ColorBox will scale photos to fit within the those values.'),
+    '#default_value' => $settings['scalePhotos'],
+  );
+
+  $element['scrolling'] = array(
+    '#type' => 'select',
+    '#options' => array('true' => t('True'), 'false' => t('False')),
+    '#title' => t('Colorbox scrolling'),
+    '#description' => t('If false, ColorBox will hide scrollbars for overflowing content. This could be used on conjunction with the resize method (see below) for a smoother transition if you are appending content to an already open instance of ColorBox.'),
+    '#default_value' => $settings['scrolling'],
+  );
+
+  $element['opacity'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Colorbox opacity'),
+    '#description' => t('The overlay opacity level. Range: 0 to 1.'),
+    '#default_value' => $settings['opacity'],
+  );
+
+  $element['preloading'] = array(
+    '#type' => 'select',
+    '#options' => array('true' => t('True'), 'false' => t('False')),
+    '#title' => t('Colorbox preloading'),
+    '#description' => t('Allows for preloading of \'Next\' and \'Previous\' content in a group, after the current content has finished loading. Set to false to disable.'),
+    '#default_value' => $settings['preloading'],
+  );
+
+  $element['overlayClose'] = array(
+    '#type' => 'select',
+    '#options' => array('true' => t('True'), 'false' => t('False')),
+    '#title' => t('Colorbox overlay close'),
+    '#description' => t('If false, disables closing ColorBox by clicking on the background overlay.'),
+    '#default_value' => $settings['overlayClose'],
+  );
+
+  $element['escKey'] = array(
+    '#type' => 'select',
+    '#options' => array('true' => t('True'), 'false' => t('False')),
+    '#title' => t('Colorbox ESC close'),
+    '#description' => t('If false, will disable closing colorbox on \'esc\' key press.'),
+    '#default_value' => $settings['escKey'],
+  );
+
+  $element['arrowKey'] = array(
+    '#type' => 'select',
+    '#options' => array('true' => t('True'), 'false' => t('False')),
+    '#title' => t('Colorbox arrow key'),
+    '#description' => t('If false, will disable the left and right arrow keys from navigating between the items in a group.'),
+    '#default_value' => $settings['arrowKey'],
+  );
+
+  $element['loop'] = array(
+    '#type' => 'select',
+    '#options' => array('true' => t('True'), 'false' => t('False')),
+    '#title' => t('Colorbox loop'),
+    '#description' => t('If false, will disable the ability to loop back to the beginning of the group when on the last element.'),
+    '#default_value' => $settings['loop'],
+  );
+
+  $element['width'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Colorbox width'),
+    '#description' => t('Set a fixed total width. This includes borders and buttons. Example: "100%", "500px", or 500'),
+    '#default_value' => $settings['width'],
+    '#field_suffix' => 'px',
+  );
+
+  $element['height'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Colorbox height'),
+    '#description' => t('Set a fixed total height. This includes borders and buttons. Example: "100%", "500px", or 500'),
+    '#default_value' => $settings['height'],
+    '#field_suffix' => 'px',
+  );
+
+  $element['innerWidth'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Colorbox inner width'),
+    '#description' => t('This is an alternative to \'width\' used to set a fixed inner width. This excludes borders and buttons. Example: "50%", "500px", or 500'),
+    '#default_value' => $settings['innerWidth'],
+    '#field_suffix' => 'px',
+  );
+
+  $element['innerHeight'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Colorbox inner height'),
+    '#description' => t('This is an alternative to \'height\' used to set a fixed inner height. This excludes borders and buttons. Example: "50%", "500px", or 500'),
+    '#default_value' => $settings['innerHeight'],
+    '#field_suffix' => 'px',
+  );
+
+  $element['initialWidth'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Colorbox initial width'),
+    '#description' => t('Set the initial width, prior to any content being loaded.'),
+    '#default_value' => $settings['initialWidth'],
+    '#field_suffix' => 'px',
+  );
+
+  $element['initialHeight'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Colorbox initial height'),
+    '#description' => t('Set the initial height, prior to any content being loaded.'),
+    '#default_value' => $settings['initialHeight'],
+    '#field_suffix' => 'px',
+  );
+
+  $element['maxWidth'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Colorbox max width'),
+    '#description' => t('Set a maximum width for loaded content. Example: "100%", 500, "500px"'),
+    '#default_value' => $settings['maxWidth'],
+    '#field_suffix' => 'px',
+  );
+
+  $element['maxHeight'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Colorbox max height'),
+    '#description' => t('Set a maximum height for loaded content. Example: "100%", 500, "500px"'),
+    '#default_value' => $settings['maxHeight'],
+    '#field_suffix' => 'px',
+  );
   return $element;
 }
 
@@ -222,9 +403,10 @@ function vt_commerce_image_field_formatter_settings_form($field, $instance, $vie
 function vt_commerce_image_field_formatter_settings_summary($field, $instance, $view_mode) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
-  $summary = t('@zoom <br />@hoverZoom', array(
+  $summary = t('@zoom <br />@hoverZoom <br />@colorbox', array(
     '@zoom' => ($settings['zoom'] == TRUE) ? 'Zooming enabled' : 'Zooming disabled',
-  	'@hoverZoom' => ($settings['hoverZoom'] == TRUE) ? 'Thumbnail Hover Zooming enabled' : 'Thumbnail Hover Zooming  Zooming disabled',
+  	'@hoverZoom' => ($settings['hoverZoom'] == TRUE) ? 'Thumbnail Hover Zooming enabled' : 'Thumbnail Hover Zooming disabled',
+    '@colorbox' => ($settings['colorbox'] == TRUE) ? 'Colorbox enabled' : 'Colorbox disabled',
   )); // we use t() for translation and placeholders to guard against attacks
   return $summary;
 }
@@ -255,6 +437,7 @@ function vt_commerce_image_field_formatter_view($entity_type, $entity, $field, $
 
   $module_path = drupal_get_path('module', 'vt_commerce_image');
 
+  // add all the js
   $js = array();
   if ($settings['zoom']) {
     $js[] = $module_path . '/js/cloud-zoom.1.0.2.js';
@@ -262,6 +445,19 @@ function vt_commerce_image_field_formatter_view($entity_type, $entity, $field, $
       $js[] = $module_path . '/js/image-enlarge.js';
     }
     $js[] = $module_path . '/js/vt_commerce_image.js';
+  }
+
+  if ($settings['colorbox'] == 1 && !module_exists('colorbox')) {
+    $js[] = $module_path . '/js/jquery.colorbox-min.js';
+  }
+
+  // add all the css
+  $css = array();
+  $css[] = $module_path . '/css/cloud-zoom.css';
+  $css[] = $module_path . '/theme/' . $settings['moduletheme'] . '/' . $settings['moduletheme'] . '.css';
+
+  if ($settings['colorbox'] == 1) {
+    $css[] = $module_path . '/colorbox_theme/' . $settings['colorboxTheme'] . '/' . $settings['colorboxTheme'] . '.css';
   }
 
   $element = array(
@@ -272,7 +468,7 @@ function vt_commerce_image_field_formatter_view($entity_type, $entity, $field, $
         '#setting' => $settings,
       ),
       '#attached' => array(
-        'css' => array($module_path . '/css/vt_commerce_css.css', $module_path . '/css/cloud-zoom.css'),
+        'css' => $css,
         'js' => $js,
       ),
     ),
@@ -375,7 +571,6 @@ function vt_commerce_image_image_default_styles() {
         ),
       ),
     ),
-
     'vt_commerce_image_large' => array(
    		'effects' => array(
         array(
@@ -391,4 +586,27 @@ function vt_commerce_image_image_default_styles() {
    );
 
   return $styles;
+}
+
+
+/**
+ * Function to read directory looking for themes
+ * This function will search for a theme in a certain modules
+ * the modules must have module_name/theme/theme_name.css
+ * The return value will be an array keyed with the theme name and theme name as value
+ * @param string $modulename
+ */
+if (!function_exists('vt_commerce_catalog_read_dir')) {
+  function vt_commerce_catalog_read_dir($modulename , $customdir = FALSE) {
+    if (empty($customdir)) {
+      $dir = drupal_get_path('module', $modulename) . '/theme/';
+    } else {
+      $dir = drupal_get_path('module', $modulename) . $customdir;
+    }
+    $options = array('key' => 'filename');
+    $array = array();
+    $files = file_scan_directory($dir, '/.*\.css$/' , $options);
+    foreach ($files as $key => $value) $array[$value->name] = $value->name;
+    return $array;
+  }
 }
