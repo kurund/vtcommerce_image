@@ -4,11 +4,12 @@
  */
 function vt_commerce_image_field_formatter_info() {
   return array(
-    'vt_commerce_image_formatter' => array( 
+    'vt_commerce_image_formatter' => array(
       'label' => t('VT Commerce Image'),
-      'field types' => array('image'), 
+      'field types' => array('image'),
       'settings'  => array( //Array of the settings we'll create
-        'zoom' => TRUE,
+        'zoom' => 1,
+        'hoverZoom' => 1,
       ),
     ),
   );
@@ -25,14 +26,19 @@ function vt_commerce_image_field_formatter_settings_form($field, $instance, $vie
   $settings = $display['settings'];
   //Initialize the element variable
   $element = array();
-  
+
   $element['zoom'] = array(
     '#type' => 'checkbox',
     '#description' => t('Check to enable zooming features in the large image area'),
     '#title' => t('Zooming'),
     '#default_value' => $settings['zoom'],
   );
-  
+  $element['hoverZoom'] = array(
+    '#type' => 'checkbox',
+    '#description' => t('Check to enable thumbnail zooming features in the large image area'),
+    '#title' => t('Thumbnail Hover Zooming'),
+    '#default_value' => $settings['hoverZoom'],
+  );
   return $element;
 }
 
@@ -43,8 +49,9 @@ function vt_commerce_image_field_formatter_settings_form($field, $instance, $vie
 function vt_commerce_image_field_formatter_settings_summary($field, $instance, $view_mode) {
   $display = $instance['display'][$view_mode];
   $settings = $display['settings'];
-  $summary = t('@zoom', array(
+  $summary = t('@zoom <br />@hoverZoom', array(
     '@zoom' => ($settings['zoom'] == TRUE) ? 'Zooming enabled' : 'Zooming disabled',
+  	'@hoverZoom' => ($settings['hoverZoom'] == TRUE) ? 'Thumbnail Hover Zooming enabled' : 'Thumbnail Hover Zooming  Zooming disabled',
   )); // we use t() for translation and placeholders to guard against attacks
   return $summary;
 }
@@ -54,87 +61,97 @@ function vt_commerce_image_field_formatter_settings_summary($field, $instance, $
  */
 function vt_commerce_image_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array(); // Initialize the var
-   drupal_add_js(drupal_get_path('module', 'vt_commerce_image') . '/js/cloud-zoom.1.0.2.js');
   $settings = $display['settings']; // get the settings
-  $element[0]['#markup'] = theme('vt_commerce_image_wrapper', array('items' => $items, 'settings' => $settings));
-  return $element; 
+
+  // add the setting
+  drupal_add_js(array('vt_commerce_image' => $settings), 'setting');
+
+  $module_path = drupal_get_path('module', 'vt_commerce_image');
+
+  $js = array();
+  if ($settings['zoom']) {
+    $js[] = $module_path . '/js/cloud-zoom.1.0.2.js';
+    if ($settings['hoverZoom']) {
+      $js[] = $module_path . '/js/image-enlarge.js';
+    }
+    $js[] = $module_path . '/js/vt_commerce_image.js';
+  }
+
+  $element = array(
+  	'0' => array(
+      'content' => array(
+        '#child' => $items,
+        '#theme' => 'vt_commerce_image_wrapper',
+        '#setting' => $settings,
+      ),
+      '#attached' => array(
+        'css' => array($module_path . '/css/vt_commerce_css.css'),
+        'js' => $js,
+      ),
+    ),
+  );
+
+  return $element;
 }
 
 /**
-  * HOOK THEME
-  *
-  **/
-
+ * Implement hook_theme()
+ */
 function vt_commerce_image_theme() {
   return array(
     'vt_commerce_image_wrapper' => array(
-			'template'			=> 'templates/vt-commerce-image-wrapper',
-  		'variables'     => array('items' => NULL, 'settings' => NULL),
+			'template'			  => 'templates/vt-commerce-image-wrapper',
+      'render element'  => 'element',
     ),
 		'vt_commerce_image_content' => array(
 			'template'			=> 'templates/vt-commerce-image-content',
 			'variables'     => array('item' => NULL, 'settings' => NULL),
     ),
-    'vt_commerce_image_preview' => array(
-      'template'			=> 'templates/vt-commerce-image-preview',
-      'variables'     => array('item' => NULL, 'settings' => NULL),
-    ),
   );
 }
 
+/**
+ * Implement Preprocess Function
+ *
+ * @param array $variables
+ */
 function template_preprocess_vt_commerce_image_wrapper(&$variables) {
-  $items = $variables['items'];
-  $settings = $variables['settings'];
-  $jssettings = array();
-  // load the js and settings for js here
-  if ($settings['zoom']) {
-    drupal_add_js(drupal_get_path('module', 'vt_commerce_image') . '/js/cloud-zoom.1.0.2.js');
-    $jssettings['vt_commerce_image']['zoom'] = 'yes';
-    drupal_add_js($jssettings, 'setting');	
+  if (!empty($variables['element']) && !empty($variables['element']['#child'])) {
+    $items = $variables['element']['#child'];
+    $settings = $variables['element']['#setting'];
+    $variables['content'] = '';
+
+    // looping to each image and theme it
+    foreach ($items as $item) {
+      $variables['content'] .= theme('vt_commerce_image_content', array('item' => $item, 'settings' => $settings));
+    }
   }
-  
-  // load the js
-  $variables['content'] = '';
-  $variables['preview'] = '';
-  drupal_add_library('system', 'ui.slider');
-  drupal_add_js(drupal_get_path('module', 'vt_commerce_image') . '/js/image-enlarge.js');
-  drupal_add_js(drupal_get_path('module', 'vt_commerce_image') . '/js/vt_commerce_image.js');
-  drupal_add_css(drupal_get_path('module', 'vt_commerce_image') . '/css/vt_commerce_css.css');
-  
-  foreach ($items as $item) {
-    $variables['content'] .= theme('vt_commerce_image_content', array('item' => $item, 'settings' => $settings));
-    $variables['preview'] .= theme('vt_commerce_image_preview', array('item' => $item, 'settings' => $settings));
-  }
-  
 }
+
+/**
+ * Implement Preprocess Function
+ *
+ * @param array $variables
+ */
 function template_preprocess_vt_commerce_image_content(&$variables) {
   $item = $variables['item'];
   $settings = $variables['settings'];
-  //drupal_set_message('<pre>'. print_r($item, TRUE) . '</pre>');
+
   // load the js and settings for js here
   if ($settings['zoom']) {
-     $variables['zoom_image'] = image_style_url('vt_commerce_image_zoom', $item['uri']); 
+     $variables['zoom_image'] = image_style_url('vt_commerce_image_zoom', $item['uri']);
   }
-  //drupal_set_message('<pre>'. print_r(drupal_realpath($item['uri']), TRUE) . '</pre>');
+
   $variables['large_image'] = theme('image_style', array(
-  																	'style_name' => 'vt_commerce_image_large', 
-                                    'path' => $item['uri'])); 
- 
+  																	'style_name' => 'vt_commerce_image_large',
+                                    'path' => $item['uri']));
+
 }
 
-function template_preprocess_vt_commerce_image_preview(&$variables) {
-  $item = $variables['item'];
-  $settings = $variables['settings'];
-  
-  $variables['preview_image'] = theme('image_style', array(
-  																		'style_name' => 'vt_commerce_image_preview', 
-                                      'path' => $item['uri'])); 
- 
-}
-
-
+/**
+ * Implement hook_image_default_styles()
+ */
 function vt_commerce_image_image_default_styles() {
-  $styles = array();
   $styles = array(
     'vt_commerce_image_zoom' => array(
   		'effects' => array(
@@ -148,7 +165,7 @@ function vt_commerce_image_image_default_styles() {
         ),
       ),
     ),
-    
+
     'vt_commerce_image_large' => array(
    		'effects' => array(
         array(
@@ -159,20 +176,7 @@ function vt_commerce_image_image_default_styles() {
           ),
           'weight' => 0,
         ),
-      ),   
-    ),
-    
-   'vt_commerce_image_preview' => array(
-   		'effects' => array(
-        array(
-          'name' => 'image_resize',
-          'data' => array(
-            'width' => 50,
-            'height' => 50,
-          ),
-          'weight' => 0,
-        ),
-      ),   
+      ),
     ),
    );
 

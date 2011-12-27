@@ -3,8 +3,8 @@
 			//Set the default values, use comma to separate the settings, example:
 			var defaults = {
 				multiple: 1.2,
-				mouseInSpeed : 300,
-				mouseOutSpeed : 300,
+				mouseInSpeed : 200,
+				mouseOutSpeed : 400,
 				zindex : 600,
 				topOffset : 0,
 				leftOffset : 0

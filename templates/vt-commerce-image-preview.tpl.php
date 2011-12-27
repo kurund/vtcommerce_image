@@ -1,1 +1,0 @@
-<div class="vt-commerce-image-wrapper"><?php print $preview_image?></div>
