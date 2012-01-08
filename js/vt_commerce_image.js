@@ -42,39 +42,42 @@ jQuery(document).ready(function ($) {
   	    // create the thumbnail wrapper so we can add thumbnail child here later on
   	    parents.css('position', 'relative').append('<div class="cloud-thumbnail"/>');
   	  
-  	    // cloning the large image to create a thumbnail navigation
-  	    clouds.each(function() {
-  	      var thumbClone = $(this).find('img').clone().width(option.previewWidth).height(option.previewHeight);
-  	      thumbClone.appendTo('.cloud-thumbnail').addClass('thumbsmall').wrap('<div class="cloud-thumbwrapper" />');      
-  	    });
-  	    
-  	    // declare the newly cloned thumb as a new variable
-  	    var thumbSmall = $('.thumbsmall');
-  	    
-  	    // function for the thumbnail to show the right large image
-  	    thumbSmall.each(function(){      
-  	      $(this).unbind('click').click(function() {
-  	        var index = thumbSmall.index(this);
-  	        wrap.stop().hide(0, function() { 
-  	          clouds.eq(index).parents('.wrap').show();
-  	        }); 
-  	        thumbSmall.removeClass('active');
-  	        $(this).addClass('active');	        
-  	      });
-  	    }).eq(0).addClass('active');
-  
-  	    // declare the thumbwrapper
-  	    var thumbWrapper = $('.cloud-thumbwrapper');
-        if (option.hoverZoom == 1) {
-          thumbWrapper.width(option.previewWidth).height(option.previewHeight).imageEnlarge({
-            multiple: option.multiple,
-            mouseInSpeed : option.mouseOutSpeed,
-            mouseOutSpeed : option.mouseInSpeed,
-            zindex : option.zindex,
-            topOffset : option.topOffset,
-            leftOffset : option.leftOffset
-          });
-        }
+  	    // only build thumbnail if more than 1 images found
+  	    if (clouds.length > 1) {
+    	    // cloning the large image to create a thumbnail navigation
+    	    clouds.each(function() {
+    	      var thumbClone = $(this).find('img').clone().width(option.previewWidth).height(option.previewHeight);
+    	      thumbClone.appendTo('.cloud-thumbnail').addClass('thumbsmall').wrap('<div class="cloud-thumbwrapper" />');      
+    	    });
+    	    
+    	    // declare the newly cloned thumb as a new variable
+    	    var thumbSmall = $('.thumbsmall');
+    	    
+    	    // function for the thumbnail to show the right large image
+    	    thumbSmall.each(function(){      
+    	      $(this).unbind('click').click(function() {
+    	        var index = thumbSmall.index(this);
+    	        wrap.stop().hide(0, function() { 
+    	          clouds.eq(index).parents('.wrap').show();
+    	        }); 
+    	        thumbSmall.removeClass('active');
+    	        $(this).addClass('active');	        
+    	      });
+    	    }).eq(0).addClass('active');
+    
+    	    // declare the thumbwrapper
+    	    var thumbWrapper = $('.cloud-thumbwrapper');
+          if (option.hoverZoom == 1) {
+            thumbWrapper.width(option.previewWidth).height(option.previewHeight).imageEnlarge({
+              multiple: option.multiple,
+              mouseInSpeed : option.mouseOutSpeed,
+              mouseOutSpeed : option.mouseInSpeed,
+              zindex : option.zindex,
+              topOffset : option.topOffset,
+              leftOffset : option.leftOffset
+            });
+          }
+  	    }
   	  } // end of cloud zoom plus thumbnail
   	
   	// integrate colorbox if requested
@@ -91,7 +94,6 @@ jQuery(document).ready(function ($) {
         });
       }
   	}
-	
 	}
 	
 

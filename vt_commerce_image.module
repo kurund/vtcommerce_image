@@ -195,6 +195,22 @@ function vt_commerce_image_field_formatter_settings_form($field, $instance, $vie
     '#default_value' => $settings['hoverZoom'],
   );
 
+  $element['previewWidth'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Thumbnail Image Width'),
+    '#description' => t('Thumbnail Image Width, note changing this will require you to adjust the css accordingly too'),
+    '#default_value' => $settings['previewWidth'],
+    '#field_suffix' => 'px',
+  );
+
+  $element['previewHeight'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Thumbnail Image Height'),
+    '#description' => t('Thumbnail Image Height, note changing this will require you to adjust the css accordingly too'),
+    '#default_value' => $settings['previewHeight'],
+    '#field_suffix' => 'px',
+  );
+
   $element['multiple'] = array(
     '#type' => 'textfield',
     '#title' => t('Zooming Multiplier'),
