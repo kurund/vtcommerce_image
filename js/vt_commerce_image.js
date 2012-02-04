@@ -25,6 +25,20 @@ jQuery(document).ready(function ($) {
 		    
 		if (option.zoom == 1) {
 		  clouds.CloudZoom();
+		  
+		  // bug fixing for missing height for mousetrap other than element 1
+		  // uncomment this if your mousetrap get height = 0 for element
+		  // other than first mousetrap element
+		  /**
+		  var mouseheight = $('.mousetrap').eq(0).height();
+		  $('.mousetrap').each(function() {
+		    var trapheight = $(this).height();
+		    if (trapheight == 0) {
+		      $(this).height(mouseheight);
+		    }  
+		  });
+		  **/
+		  
 		}
 
 	  // initialization
@@ -82,20 +96,21 @@ jQuery(document).ready(function ($) {
         });
       }
     }
-  } // end of cloud zoom plus thumbnail
 	
-	// integrate colorbox if requested
-	if (option.colorbox == 1) {
-    $('a.cloud-zoom').colorbox(option);
-    
-    // emulate click if both colorbox and cloud zoom enabeld
-    if (option.colorbox == 1 && option.zoom == 1) {
-      $('.cloud-zoom-lens').live('click', function() {
-          $(this).parent('a').click();
-      });
-      $('.mousetrap').live('click', function() {
-        $(this).parent().find('a.cloud-zoom').click();
-      });
-    }
+  	// integrate colorbox if requested
+  	if (option.colorbox == 1) {
+      $('a.cloud-zoom').colorbox(option);
+      
+      // emulate click if both colorbox and cloud zoom enabeld
+      if (option.colorbox == 1 && option.zoom == 1) {
+        $('.cloud-zoom-lens').live('click', function() {
+            $(this).parent('a').click();
+        });
+        $('.mousetrap').live('click', function() {
+          $(this).parent().find('a.cloud-zoom').click();
+        });
+      }
+  	}
+	
 	}
 });

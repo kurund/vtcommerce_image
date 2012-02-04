@@ -535,7 +535,7 @@ function template_preprocess_vt_commerce_image_wrapper(&$variables) {
 function template_preprocess_vt_commerce_image_content(&$variables) {
   $item = $variables['item'];
   $settings = $variables['settings'];
-
+  dsm($settings);
   // build the relevant attributes
   $clouds = array('softFocus', 'zoomWidth', 'zoomHeight', 'position', 'adjustX', 'adjustY', 'tint', 'tintOpacity', 'lensOpacity', 'smoothMove', 'showTitle', 'titleOpacity');
 
