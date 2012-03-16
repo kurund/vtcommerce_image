@@ -19,7 +19,7 @@ jQuery(document).ready(function ($) {
 		var clouds = $('.cloud-zoom'),
 		    parents = $('.vt-commerce-image-wrapper'), // your parent element
 		    wrap = $('.wrap'),
-		    z = 9000,
+		    z = 50,
         cHeight = clouds.find('img').outerHeight(true),
         cWidth = clouds.find('img').outerWidth(true);
 		    

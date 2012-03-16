@@ -535,7 +535,7 @@ function template_preprocess_vt_commerce_image_wrapper(&$variables) {
 function template_preprocess_vt_commerce_image_content(&$variables) {
   $item = $variables['item'];
   $settings = $variables['settings'];
-  dsm($settings);
+
   // build the relevant attributes
   $clouds = array('softFocus', 'zoomWidth', 'zoomHeight', 'position', 'adjustX', 'adjustY', 'tint', 'tintOpacity', 'lensOpacity', 'smoothMove', 'showTitle', 'titleOpacity');
 
@@ -612,7 +612,7 @@ function vt_commerce_image_image_default_styles() {
  * The return value will be an array keyed with the theme name and theme name as value
  * @param string $modulename
  */
-if (!function_exists('vt_commerce_catalog_read_dir')) {
+if (!module_exists('vt_commerce_catalog')) {
   function vt_commerce_catalog_read_dir($modulename , $customdir = FALSE) {
     if (empty($customdir)) {
       $dir = drupal_get_path('module', $modulename) . '/theme/';
