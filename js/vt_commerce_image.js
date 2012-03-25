@@ -24,21 +24,7 @@ jQuery(document).ready(function ($) {
         cWidth = clouds.find('img').outerWidth(true);
 		    
 		if (option.zoom == 1) {
-		  clouds.CloudZoom();
-		  
-		  // bug fixing for missing height for mousetrap other than element 1
-		  // uncomment this if your mousetrap get height = 0 for element
-		  // other than first mousetrap element
-		  /**
-		  var mouseheight = $('.mousetrap').eq(0).height();
-		  $('.mousetrap').each(function() {
-		    var trapheight = $(this).height();
-		    if (trapheight == 0) {
-		      $(this).height(mouseheight);
-		    }  
-		  });
-		  **/
-		  
+		  clouds.CloudZoom();	  
 		}
 
 	  // initialization
@@ -111,6 +97,5 @@ jQuery(document).ready(function ($) {
         });
       }
   	}
-	
 	}
 });
