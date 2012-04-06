@@ -20,9 +20,15 @@ jQuery(document).ready(function ($) {
 		    parents = $('.vt-commerce-image-wrapper'), // your parent element
 		    wrap = $('.wrap'),
 		    z = 50,
+		    clubthumbs = $('.cloud-thumbwrapper'),
         cHeight = clouds.find('img').outerHeight(true),
         cWidth = clouds.find('img').outerWidth(true);
-		    
+		
+		// We suspect the element is built already
+		if (clubthumbs.length != 0) {
+		  return;
+		}
+		
 		if (option.zoom == 1) {
 		  clouds.CloudZoom();	  
 		}
