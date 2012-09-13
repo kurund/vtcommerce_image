@@ -434,9 +434,6 @@ function vt_commerce_image_field_formatter_view($entity_type, $entity, $field, $
   $element = array(); // Initialize the var
   $settings = $display['settings']; // get the settings
 
-  // add the setting
-  drupal_add_js(array('vt_commerce_image' => $settings), 'setting');
-
   // check if we have main image default width and height stored in database
   $width = variable_get('vt_commerce_image_width', '');
   $height = variable_get('vt_commerce_image_height', '');
@@ -454,7 +451,9 @@ function vt_commerce_image_field_formatter_view($entity_type, $entity, $field, $
   $module_path = drupal_get_path('module', 'vt_commerce_image');
 
   // add all the js
-  $js = array();
+  $js = array(
+    array('data' => array('vtCommerceImage' => $settings), 'type' => 'setting'),
+  );
   if ($settings['zoom']) {
     $js[] = $module_path . '/js/cloud-zoom.1.0.2.js';
     if ($settings['hoverZoom']) {
@@ -477,18 +476,23 @@ function vt_commerce_image_field_formatter_view($entity_type, $entity, $field, $
   }
 
   $element = array(
-  	'0' => array(
-      'content' => array(
-        '#child' => $items,
-        '#theme' => 'vt_commerce_image_wrapper',
-        '#setting' => $settings,
-      ),
+    array(
+    	'#theme' => 'vt_commerce_image_wrapper',
+      'children' => array(),
       '#attached' => array(
         'css' => $css,
         'js' => $js,
       ),
     ),
   );
+
+  foreach ($items as $item) {
+    $element[0]['children'][] = array(
+      '#theme' => 'vt_commerce_image_content',
+      'content' => $item,
+      '#settings' => $settings,
+    );
+  }
 
   return $element;
 }
@@ -499,12 +503,12 @@ function vt_commerce_image_field_formatter_view($entity_type, $entity, $field, $
 function vt_commerce_image_theme() {
   return array(
     'vt_commerce_image_wrapper' => array(
-			'template'			  => 'templates/vt-commerce-image-wrapper',
-      'render element'  => 'element',
+			'template' => 'templates/vt-commerce-image-wrapper',
+      'render element' => 'element',
     ),
 		'vt_commerce_image_content' => array(
-			'template'			=> 'templates/vt-commerce-image-content',
-			'variables'     => array('item' => NULL, 'settings' => NULL),
+			'template' => 'templates/vt-commerce-image-content',
+			'render element' => 'element',
     ),
   );
 }
@@ -514,27 +518,11 @@ function vt_commerce_image_theme() {
  *
  * @param array $variables
  */
-function template_preprocess_vt_commerce_image_wrapper(&$variables) {
-  if (!empty($variables['element']) && !empty($variables['element']['#child'])) {
-    $items = $variables['element']['#child'];
-    $settings = $variables['element']['#setting'];
-    $variables['content'] = '';
-
-    // looping to each image and theme it
-    foreach ($items as $item) {
-      $variables['content'] .= theme('vt_commerce_image_content', array('item' => $item, 'settings' => $settings));
-    }
-  }
-}
-
-/**
- * Implement Preprocess Function
- *
- * @param array $variables
- */
 function template_preprocess_vt_commerce_image_content(&$variables) {
-  $item = $variables['item'];
-  $settings = $variables['settings'];
+
+  $element = $variables['element'];
+  $item = $element['content'];
+  $settings = $element['#settings'];
 
   // build the relevant attributes
   $clouds = array('softFocus', 'zoomWidth', 'zoomHeight', 'position', 'adjustX', 'adjustY', 'tint', 'tintOpacity', 'lensOpacity', 'smoothMove', 'showTitle', 'titleOpacity');
