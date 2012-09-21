@@ -14,7 +14,6 @@
           cHeight = clouds.find('img').outerHeight(true),
           cWidth = clouds.find('img').outerWidth(true);
       
-     
       // initialization
       // This is very important steps because jQuery cloud js need the element
       // to be visible when intialized, so we cannot just plain hide the
@@ -31,6 +30,16 @@
             z--;       
           }).eq(0).parent().show();
         });
+      }
+      else {
+        // Build manually the wrapper class and re-register
+        // The clouds so the rest of the script won't break.
+        parents.find('img').wrap('<div class="wrap" />').wrap('<div class="cloud-zoom" />');
+        clouds = $('.cloud-zoom');
+        clouds.each(function() {
+          $(this).parent().css('z-index',  z ).hide();
+          z--;       
+        }).parent().eq(0).show();
       }
 
       

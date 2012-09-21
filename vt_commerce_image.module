@@ -454,17 +454,20 @@ function vt_commerce_image_field_formatter_view($entity_type, $entity, $field, $
   $js = array(
     array('data' => array('vtCommerceImage' => $settings), 'type' => 'setting'),
   );
+
   if ($settings['zoom']) {
     $js[] = $module_path . '/js/cloud-zoom.1.0.2.js';
-    if ($settings['hoverZoom']) {
-      $js[] = $module_path . '/js/image-enlarge.js';
-    }
-    $js[] = $module_path . '/js/vt_commerce_image.js';
+  }
+
+  if ($settings['hoverZoom']) {
+    $js[] = $module_path . '/js/image-enlarge.js';
   }
 
   if ($settings['colorbox'] == 1 && !module_exists('colorbox')) {
     $js[] = $module_path . '/js/jquery.colorbox-min.js';
   }
+
+  $js[] = $module_path . '/js/vt_commerce_image.js';
 
   // add all the css
   $css = array();
