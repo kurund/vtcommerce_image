@@ -9,10 +9,10 @@
       var clouds = $('.cloud-zoom'),
           parents = $('.vt-commerce-image-wrapper'), // your parent element
           wrap = parents.find('.wrap'),
-          z = 50,
           clubthumbs = $('.cloud-thumbwrapper'),
           cHeight = clouds.find('img').outerHeight(true),
-          cWidth = clouds.find('img').outerWidth(true);
+          cWidth = clouds.find('img').outerWidth(true),
+          z = clouds.find('img').length;
       
       // initialization
       // This is very important steps because jQuery cloud js need the element
@@ -25,7 +25,7 @@
       // @todo Make this as a $.fn function
       if (option.zoom == 1) {
         clouds.children('img').load(function() {
-          clouds.CloudZoom().each(function() {
+          clouds.once('cloud-init').CloudZoom().each(function() {
             $(this).parent().css('z-index',  z ).hide();
             z--;       
           }).eq(0).parent().show();
@@ -36,7 +36,7 @@
         // The clouds so the rest of the script won't break.
         parents.find('img').wrap('<div class="wrap" />').wrap('<div class="cloud-zoom" />');
         clouds = $('.cloud-zoom');
-        clouds.each(function() {
+        clouds.once('cloud-init').each(function() {
           $(this).parent().css('z-index',  z ).hide();
           z--;       
         }).parent().eq(0).show();
@@ -46,12 +46,14 @@
       // set the large image wrapper height
       $('.vt-commerce-image-large').height(cHeight);
       
-      // create the thumbnail wrapper so we can add thumbnail child here later on
-      parents.css('position', 'relative').append('<div class="cloud-thumbnail"/>');
     
       // only build thumbnail if more than 1 images found
       // @todo Make this as a $.fn function
       if (clouds.length > 1 && clubthumbs.length == 0) {
+        
+        // create the thumbnail wrapper so we can add thumbnail child here later on
+        parents.append('<div class="cloud-thumbnail"/>');
+        
         // cloning the large image to create a thumbnail navigation
         clouds.each(function() {
           var thumbClone = $(this).find('img').clone().width(option.previewWidth).height(option.previewHeight);
@@ -89,7 +91,8 @@
     
       // Integrate colorbox if requested.
       // @todo Make this as a $.fn function
-      if (option.colorbox == 1) {
+      // If user wants colorbox with zooming
+      if (option.colorbox == 1) {        
         $('a.cloud-zoom').colorbox(option);
         
         // emulate click if both colorbox and cloud zoom enabeld
