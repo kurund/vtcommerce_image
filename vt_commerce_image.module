@@ -571,8 +571,8 @@ function vt_commerce_image_image_default_styles() {
         array(
           'name' => 'image_resize',
           'data' => array(
-            'width' => variable_get('vt_commerce_image_width', 360) * 3,
-            'height' => variable_get('vt_commerce_image_width', 360) * 3,
+            'width' => variable_get('vt_commerce_image_width', 320) * 3,
+            'height' => variable_get('vt_commerce_image_height', 240) * 3,
           ),
           'weight' => 0,
         ),
@@ -583,8 +583,8 @@ function vt_commerce_image_image_default_styles() {
         array(
           'name' => 'image_resize',
           'data' => array(
-            'width' => variable_get('vt_commerce_image_width', 360),
-            'height' => variable_get('vt_commerce_image_height', 220),
+            'width' => variable_get('vt_commerce_image_width', 320),
+            'height' => variable_get('vt_commerce_image_height', 240),
           ),
           'weight' => 0,
         ),
