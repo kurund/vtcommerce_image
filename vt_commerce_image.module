@@ -464,7 +464,8 @@ function vt_commerce_image_field_formatter_view($entity_type, $entity, $field, $
   }
 
   if ($settings['colorbox'] == 1 && !module_exists('colorbox')) {
-    $js[] = $module_path . '/js/jquery.colorbox-min.js';
+    //$js[] = $module_path . '/js/jquery.colorbox-min.js';
+    $js[] = $module_path . '/js/jquery.colorbox.js';
   }
 
   $js[] = $module_path . '/js/vt_commerce_image.js';
@@ -554,6 +555,10 @@ function template_preprocess_vt_commerce_image_content(&$variables) {
      $variables['zoom_image'] = image_style_url('vt_commerce_image_zoom', $item['uri']);
      $variables['normal_image'] = image_style_url('vt_commerce_image_large', $item['uri']);
   }
+
+  // set the thumbnail image using default thumbnail
+  // FIX me: move thumbnail into configurations setting.
+  $variables['thumbnail'] = image_style_url('thumbnail', $item['uri']);
 
   if ($settings['moduletheme'] == 'vt_commerce_image_default') {
     $settings['moduletheme'] = 'vt_commerce_image_large';

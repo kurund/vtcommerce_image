@@ -34,8 +34,14 @@
       else {
         // Build manually the wrapper class and re-register
         // The clouds so the rest of the script won't break.
+        // we are skipping adding wrapper around thumbnail
         if (parents.find('div.wrap').length < 1) {
-          parents.find('img').wrap('<div class="wrap" />').wrap('<div class="cloud-zoom" />');
+          parents.find('img').each(function(){
+            if (!$(this).hasClass('vt-thumbnail')) {
+              $(this).wrap('<div class="wrap" />').wrap('<div class="cloud-zoom" />');
+            }
+          });
+
           clouds = $('.cloud-zoom');
           clouds.once('cloud-init').each(function () {
             $(this).parent().css('z-index', z).hide();
@@ -57,13 +63,15 @@
         // create the thumbnail wrapper so we can add thumbnail child here later on
         parents.append('<div class="cloud-thumbnail"/>');
 
-        // cloning the large image to create a thumbnail navigation
-        clouds.each(function () {
-          var thumbClone = $(this).find('img').clone().width(option.previewWidth).height(option.previewHeight);
-          thumbClone.appendTo('.cloud-thumbnail').addClass('thumbsmall').wrap('<div class="cloud-thumbwrapper" />');
+        // use thumbnail to create a thumbnail navigation
+        parents.find('img').each(function(){
+          if ($(this).hasClass('vt-thumbnail')) {
+            $(this).width(option.previewWidth).height(option.previewHeight);
+            $(this).appendTo('.cloud-thumbnail').addClass('thumbsmall').wrap('<div class="cloud-thumbwrapper" />');
+          }
         });
 
-        // declare the newly cloned thumb as a new variable
+        // declare the thumbnail as a new variable
         var thumbSmall = $('.thumbsmall');
 
         // function for the thumbnail to show the right large image
