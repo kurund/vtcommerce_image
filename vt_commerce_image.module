@@ -555,9 +555,13 @@ function template_preprocess_vt_commerce_image_content(&$variables) {
      $variables['normal_image'] = image_style_url('vt_commerce_image_large', $item['uri']);
   }
 
+  if ($settings['moduletheme'] == 'vt_commerce_image_default') {
+    $settings['moduletheme'] = 'vt_commerce_image_large';
+  }
+
   $variables['large_image'] = theme('image_style', array(
-  																	'style_name' => 'vt_commerce_image_large',
-                                    'path' => $item['uri']));
+    'style_name' => $settings['moduletheme'],
+    'path' => $item['uri']));
 
 }
 
