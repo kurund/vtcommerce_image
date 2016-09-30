@@ -54,7 +54,6 @@
       // set the large image wrapper height
       $('.vt-commerce-image-large').height(cHeight);
 
-
       // only build thumbnail if more than 1 images found
       // @todo Make this as a $.fn function
 
@@ -98,6 +97,14 @@
             leftOffset: option.leftOffset
           });
         }
+      }
+      else if (clouds.length == 1) {
+        // if it's only one image than remove the thumbnail image
+        parents.find('img').each(function(){
+          if ($(this).hasClass('vt-thumbnail')) {
+            $(this).remove();
+          }
+        });
       }
 
       // Integrate colorbox if requested.
