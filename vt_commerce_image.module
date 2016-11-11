@@ -25,6 +25,7 @@ function vt_commerce_image_field_formatter_info() {
         'showTitle' => 'true',
         'titleOpacity' => '0.5',
         'hoverZoom' => 1,
+        'thumbnailStyle' => 'thumbnail',
         'multiple' => '1.2',
         'mouseInSpeed' => '200',
         'mouseOutSpeed' => '400',
@@ -68,10 +69,21 @@ function vt_commerce_image_field_formatter_settings_form($field, $instance, $vie
   $settings = $display['settings'];
   //Initialize the element variable
   $element = array();
+  // get vt commerce styles from themes
+  $vt_commerce_themes = vt_commerce_catalog_read_dir('vt_commerce_image');
+
+  // get all the image styles from drupal
+  $all_image_styles = array_keys(image_styles());
+
+  // combine theme and system image styles
+  $all_image_styles = $vt_commerce_themes + array_combine($all_image_styles, $all_image_styles);
+
+  asort($all_image_styles);
+
   $element['moduletheme'] = array(
     '#type' => 'select',
-    '#options' => vt_commerce_catalog_read_dir('vt_commerce_image'),
-    '#title' => t('Select themes'),
+    '#options' => $all_image_styles,
+    '#title' => t('Select theme / image style'),
     '#default_value' => $settings['moduletheme'],
   );
   $element['zoom'] = array(
@@ -193,6 +205,13 @@ function vt_commerce_image_field_formatter_settings_form($field, $instance, $vie
     '#description' => t('Check to enable thumbnail zooming features in the large image area'),
     '#title' => t('Thumbnail Hover Zooming'),
     '#default_value' => $settings['hoverZoom'],
+  );
+
+  $element['thumbnailStyle'] = array(
+    '#type' => 'select',
+    '#options' => $all_image_styles,
+    '#title' => t('Select theme / image style'),
+    '#default_value' => $settings['thumbnailStyle'],
   );
 
   $element['previewWidth'] = array(
@@ -556,9 +575,11 @@ function template_preprocess_vt_commerce_image_content(&$variables) {
      $variables['normal_image'] = image_style_url('vt_commerce_image_large', $item['uri']);
   }
 
-  // set the thumbnail image using default thumbnail
-  // FIX me: move thumbnail into configurations setting.
-  $variables['thumbnail'] = image_style_url('thumbnail', $item['uri']);
+  if ($settings['thumbnailStyle'] == 'vt_commerce_image_default') {
+    $settings['thumbnailStyle'] = 'vt_commerce_image_large';
+  }
+
+  $variables['thumbnail'] = image_style_url($settings['thumbnailStyle'], $item['uri']);
 
   if ($settings['moduletheme'] == 'vt_commerce_image_default') {
     $settings['moduletheme'] = 'vt_commerce_image_large';
