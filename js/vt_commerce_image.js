@@ -65,7 +65,7 @@
         // use thumbnail to create a thumbnail navigation
         parents.find('img').each(function(){
           if ($(this).hasClass('vt-thumbnail')) {
-            $(this).width(option.previewWidth).height(option.previewHeight);
+            $(this).css('width', option.previewWidth).css('height',option.previewHeight);
             $(this).appendTo('.cloud-thumbnail').addClass('thumbsmall').wrap('<div class="cloud-thumbwrapper" />');
           }
         });
