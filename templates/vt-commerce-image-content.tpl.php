@@ -20,7 +20,8 @@
 <?php print $large_image;?>
 
 <?php // print the thumbnail image ?>
-<img class="vt-thumbnail" src="<?php print $thumbnail;?>">
+<img class="vt-thumbnail" src="<?php print $thumbnail['path'];?>" title="<?php print $thumbnail['title'];?>"
+     alt="<?php print $thumbnail['alt'];?>">
 
 <?php // print the wrapper closure ?>
 <?php if (!empty($zoom_image)) : ?></a><?php endif;?>

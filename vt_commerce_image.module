@@ -598,7 +598,11 @@ function template_preprocess_vt_commerce_image_content(&$variables) {
     $settings['thumbnailStyle'] = 'vt_commerce_image_large';
   }
 
-  $variables['thumbnail'] = image_style_url($settings['thumbnailStyle'], $item['uri']);
+  $variables['thumbnail'] = array(
+    'path' => image_style_url($settings['thumbnailStyle'], $item['uri']),
+    'alt' => $item['alt'],
+    'title' => $item['title'],
+  );
 
   if ($settings['moduletheme'] == 'vt_commerce_image_default') {
     $settings['moduletheme'] = 'vt_commerce_image_large';
@@ -606,7 +610,9 @@ function template_preprocess_vt_commerce_image_content(&$variables) {
 
   $variables['large_image'] = theme('image_style', array(
     'style_name' => $settings['moduletheme'],
-    'path' => $item['uri']
+    'path' => $item['uri'],
+    'alt' => $item['alt'],
+    'title' => $item['title'],
   ));
 
 }
